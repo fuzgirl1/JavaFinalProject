@@ -14,6 +14,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
+import java.awt.Font;
 
 public class Game extends Canvas {
 	
@@ -259,6 +260,11 @@ public class Game extends Canvas {
 				g.drawString("Press any key",(800-g.getFontMetrics().stringWidth("Press any key"))/2,300);
 			}
 			
+			g.setColor(Color.red);
+			g.drawString("Score: "+score, 50, 570);
+			Font font = g.getFont().deriveFont(20.0f);
+			g.setFont(font);
+			
 			// finally, we've completed drawing so clear up the graphics
 			// and flip the buffer over
 			g.dispose();
@@ -279,6 +285,7 @@ public class Game extends Canvas {
 			if (firePressed) {
 				tryToFire();
 			}
+			
 			
 			// finally pause for a bit. Note: this should run us at about
 			// 100 fps but on windows this might vary each loop due to
