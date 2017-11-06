@@ -1,3 +1,4 @@
+import java.awt.BorderLayout;
 import java.awt.Canvas;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -10,8 +11,9 @@ import java.awt.image.BufferStrategy;
 import java.util.ArrayList;
 
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
-
+import javax.swing.SwingConstants;
 
 public class Game extends Canvas {
 	
@@ -33,7 +35,8 @@ public class Game extends Canvas {
 	
 	private int alienCount;
 	
-	
+	private int score;
+		
 	private String message = "";
 	private boolean waitingForKeyPress = true;
 	private boolean leftPressed = false;
@@ -43,8 +46,9 @@ public class Game extends Canvas {
 	
 	public Game() {
 		// create a frame to contain our game
-		JFrame container = new JFrame("Space Invaders 101");
-		
+		JFrame container = new JFrame("Space Invaders");
+		//Display score
+	
 		// get hold the content of the frame and set up the resolution of the game
 		JPanel panel = (JPanel) container.getContentPane();
 		panel.setPreferredSize(new Dimension(800,600));
@@ -53,7 +57,7 @@ public class Game extends Canvas {
 		// setup our canvas size and put it into the content of the frame
 		setBounds(0,0,800,600);
 		panel.add(this);
-		
+					
 		// Tell AWT not to bother repainting our canvas since we're
 		// going to do that our self in accelerated mode
 		setIgnoreRepaint(true);
@@ -62,7 +66,7 @@ public class Game extends Canvas {
 		container.pack();
 		container.setResizable(false);
 		container.setVisible(true);
-		
+						
 		// add a listener to respond to the user closing the window. If they
 		// do we'd like to exit the game
 		container.addWindowListener(new WindowAdapter() {
@@ -83,13 +87,13 @@ public class Game extends Canvas {
 		createBufferStrategy(2);
 		strategy = getBufferStrategy();
 		
-		// initialise the entities in our game so there's something
+		// Initialize the entities in our game so there's something
 		// to see at startup
 		initEntities();
 	}
 
 	private void startGame() {
-		// clear out any existing entities and intialise a new set
+		// clear out any existing entities and Initialize a new set
 		entities.clear();
 		initEntities();
 		
@@ -103,8 +107,20 @@ public class Game extends Canvas {
 		// create the player ship and place it roughly in the center of the screen
 		ship = new ShipEntity(this,"ship.gif",370,550);
 		entities.add(ship);
-		
+		score = 0;
 		// create a block of aliens (5 rows, by 12 aliens, spaced evenly)
+		alienCount = 0;
+		for (int row=0;row<5;row++) {
+			for (int x=0;x<12;x++) {
+				Entity alien = new AlienEntity(this,"alien.gif",100+(x*50),(50)+row*30);
+				entities.add(alien);
+				alienCount++;
+			}
+		}
+	}
+	
+	private void initEntitiesNoShip() {
+		
 		alienCount = 0;
 		for (int row=0;row<5;row++) {
 			for (int x=0;x<12;x++) {
@@ -123,6 +139,7 @@ public class Game extends Canvas {
 
 	public void removeEntity(Entity entity) {
 		removeList.add(entity);
+		score+=10;
 	}
 
 	public void notifyDeath() {
@@ -136,11 +153,13 @@ public class Game extends Canvas {
 	}
 
 	public void notifyAlienKilled() {
-		// reduce the alient count, if there are none left, the player has won!
+		// reduce the alien count, if there are none left, the player has won!
 		alienCount--;
 		
 		if (alienCount == 0) {
-			notifyWin();
+			initEntitiesNoShip();
+//			notifyWin();
+			System.out.println("Score: " + score);
 		}
 		
 		// if there are still some aliens left then they all need to get faster, so
@@ -171,7 +190,7 @@ public class Game extends Canvas {
 	public void gameLoop() {
 		long lastLoopTime = System.currentTimeMillis();
 		
-		// keep looping round til the game ends
+		// keep looping round till the game ends
 		while (gameRunning) {
 			// work out how long its been since the last update, this
 			// will be used to calculate how far the entities should
@@ -203,7 +222,7 @@ public class Game extends Canvas {
 			
 			// brute force collisions, compare every entity against
 			// every other entity. If any of them collide notify 
-			// both entities that the collision has occured
+			// both entities that the collision has occurred
 			for (int p=0;p<entities.size();p++) {
 				for (int s=p+1;s<entities.size();s++) {
 					Entity me = (Entity) entities.get(p);
@@ -247,7 +266,7 @@ public class Game extends Canvas {
 			
 			// resolve the movement of the ship. First assume the ship 
 			// isn't moving. If either cursor key is pressed then
-			// update the movement appropraitely
+			// update the movement appropriately
 			ship.setHorizontalMovement(0);
 			
 			if ((leftPressed) && (!rightPressed)) {
@@ -313,13 +332,13 @@ public class Game extends Canvas {
 
 		public void keyTyped(KeyEvent e) {
 			// if we're waiting for a "any key" type then
-			// check if we've recieved any recently. We may
+			// check if we've received any recently. We may
 			// have had a keyType() event from the user releasing
 			// the shoot or move keys, hence the use of the "pressCount"
 			// counter.
 			if (waitingForKeyPress) {
 				if (pressCount == 1) {
-					// since we've now recieved our key typed
+					// since we've now received our key typed
 					// event we can mark it as such and start 
 					// our new game
 					waitingForKeyPress = false;
