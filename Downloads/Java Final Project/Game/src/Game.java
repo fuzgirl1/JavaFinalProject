@@ -37,6 +37,8 @@ public class Game extends Canvas {
 	private int alienCount;
 	
 	private int score;
+	
+	private int round = 0;
 		
 	private String message = "";
 	private boolean waitingForKeyPress = true;
@@ -123,13 +125,22 @@ public class Game extends Canvas {
 	private void initEntitiesNoShip() {
 		
 		alienCount = 0;
+		
+		Entity alien; // Save some memory, previous we would've created a ton of pointers all named the same thing.
+		
 		for (int row=0;row<5;row++) {
 			for (int x=0;x<12;x++) {
-				Entity alien = new AlienEntity(this,"alien.gif",100+(x*50),(50)+row*30);
+				alien = new AlienEntity(this,"alien.gif",100+(x*50),(50)+row*30);
 				entities.add(alien);
 				alienCount++;
 			}
 		}
+	}
+	
+	private void initBoss() {
+		Entity alien = new AlienEntity(this,"boss.gif", 300, 5);
+		entities.add(alien);
+		alienCount = 1;
 	}
 	
 
@@ -157,10 +168,16 @@ public class Game extends Canvas {
 		// reduce the alien count, if there are none left, the player has won!
 		alienCount--;
 		
-		if (alienCount == 0) {
-			initEntitiesNoShip();
+		if (alienCount <= 0) {
+			round++;
+			if(round % 2 == 0) {
+				initBoss();
+			}
+			else {
+				initEntitiesNoShip();
+			}
 //			notifyWin();
-			System.out.println("Score: " + score);
+			// System.out.println("Score: " + score);
 		}
 		
 		// if there are still some aliens left then they all need to get faster, so
@@ -364,7 +381,7 @@ public class Game extends Canvas {
 	}
 	
 
-	public static void main(String argv[]) {
+	public static void main(String args[]) {
 		Game g =new Game();
 
 		// Start the main game loop, note: this method will not
