@@ -1,16 +1,18 @@
 
-public class BossEntity extends AlienEntity{
+public class BossEntity extends Entity{
 	
 	private Game game;
 	
 	private double moveSpeed = 75;
-	private int health = 4;
+	private int health = 5;
+	private boolean temp = false;
 	
 	public BossEntity(Game game,String ref,int x,int y) {
-		super(game,ref,x,y);
+		super(ref, x, y);
 		
 		this.game = game;
 		dx = -moveSpeed;
+		health+= this.game.round / 2;
 	}
 	
 	public void move(long delta) {
@@ -21,7 +23,7 @@ public class BossEntity extends AlienEntity{
 		}
 		// and vice vesa, if we have reached the right hand side of 
 		// the screen and are moving right, request a logic update
-		if ((dx > 0) && (x > 750)) {
+		if ((dx > 0) && (x > 550)) {
 			game.updateLogic();
 		}
 		
@@ -43,14 +45,24 @@ public class BossEntity extends AlienEntity{
 	}
 	
 	public void collidedWith(Entity other) {
-		// collisions with aliens are handled elsewhere
+		if(other instanceof ShotEntity) {
+			loseHealth();
+		}
+		return;
 	}
 	
 	public void loseHealth() {
-		health--;
+		if(!temp) {
+			health -= 1;
+		}
+		temp = true;
 	}
 	
 	public boolean isDead() {
-		return (health <= 0);
+		temp = false;
+		if(health <= 0) {
+			return true;
+		}
+		return false;
 	}
 }

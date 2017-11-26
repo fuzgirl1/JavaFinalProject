@@ -38,7 +38,7 @@ public class Game extends Canvas {
 	
 	private int score;
 	
-	private int round = 0;
+	public int round = 0;
 		
 	private String message = "";
 	private boolean waitingForKeyPress = true;
@@ -138,7 +138,7 @@ public class Game extends Canvas {
 	}
 	
 	private void initBoss() {
-		Entity alien = new AlienEntity(this,"boss.gif", 300, 5);
+		Entity alien = new BossEntity(this,"boss.gif", 300, 5);
 		entities.add(alien);
 		alienCount = 1;
 	}
@@ -151,7 +151,12 @@ public class Game extends Canvas {
 
 	public void removeEntity(Entity entity) {
 		removeList.add(entity);
-		score+=10;
+		if(entity instanceof BossEntity) {
+			score+=50;
+		}
+		else if(entity instanceof AlienEntity){ // Did to remove possibility of getting points for simply hitting the target (Removing shots)
+			score+=10;
+		}
 	}
 
 	public void notifyDeath() {
@@ -170,7 +175,7 @@ public class Game extends Canvas {
 		
 		if (alienCount <= 0) {
 			round++;
-			if(round % 2 == 0) {
+			if(round % 5 == 0) {
 				initBoss();
 			}
 			else {
@@ -309,6 +314,10 @@ public class Game extends Canvas {
 			// a bad implementation of timer
 			try { Thread.sleep(10); } catch (Exception e) {}
 		}
+	}
+	
+	public void shotMissed() {
+		score -= 5;
 	}
 	
 	
