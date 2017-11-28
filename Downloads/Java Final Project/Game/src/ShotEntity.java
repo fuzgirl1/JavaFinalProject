@@ -5,12 +5,12 @@ public class ShotEntity extends Entity {
 	private Game game;
 	private boolean used = false;
 	
-	public ShotEntity(Game game,String sprite,int x,int y) {
+	public ShotEntity(Game game,String sprite,int x,int y, int direction) {
 		super(sprite,x,y);
 		
 		this.game = game;
 		
-		dy = moveSpeed;
+		dy = moveSpeed*direction;
 	}
 
 	
@@ -53,6 +53,13 @@ public class ShotEntity extends Entity {
 			
 			// notify the game that the alien has been killed
 			game.notifyAlienKilled();
+			used = true;
+		}
+		
+		else if (other instanceof ShipEntity) {
+			game.removeEntity(this);;
+			game.notifyDeath();
+			
 			used = true;
 		}
 	}

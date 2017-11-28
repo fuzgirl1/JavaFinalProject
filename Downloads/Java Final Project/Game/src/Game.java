@@ -22,9 +22,11 @@ public class Game extends Canvas {
 	
 	private boolean gameRunning = true;
 
-	private ArrayList entities = new ArrayList();
+	private ArrayList<Entity> entities = new ArrayList<Entity>();
 	
 	private ArrayList removeList = new ArrayList();
+	
+	private Entity boss;
 	
 	private Entity ship;
 	
@@ -49,7 +51,7 @@ public class Game extends Canvas {
 	
 	public Game() {
 		// create a frame to contain our game
-		JFrame container = new JFrame("Space Invaders");
+		JFrame container = new JFrame("Space Attack");
 		//Display score
 	
 		// get hold the content of the frame and set up the resolution of the game
@@ -138,8 +140,8 @@ public class Game extends Canvas {
 	}
 	
 	private void initBoss() {
-		Entity alien = new BossEntity(this,"boss.gif", 300, 5);
-		entities.add(alien);
+		boss = new BossEntity(this,"boss.gif", 300, 5);
+		entities.add(boss);
 		alienCount = 1;
 	}
 	
@@ -175,7 +177,7 @@ public class Game extends Canvas {
 		
 		if (alienCount <= 0) {
 			round++;
-			if(round % 5 == 0) {
+			if(round % 1 == 0) {
 				initBoss();
 			}
 			else {
@@ -206,8 +208,12 @@ public class Game extends Canvas {
 		
 		// if we waited long enough, create the shot entity, and record the time.
 		lastFire = System.currentTimeMillis();
-		ShotEntity shot = new ShotEntity(this,"shot.gif",ship.getX()+10,ship.getY()-30);
+		ShotEntity shot = new ShotEntity(this,"shot.gif",ship.getX()+10,ship.getY()-30, 1);
 		entities.add(shot);
+	}
+	
+	public void bossShot() {
+		entities.add(new ShotEntity(this,"bossShot.gif", boss.getX()+125, boss.getY()+100, -1));
 	}
 
 	public void gameLoop() {

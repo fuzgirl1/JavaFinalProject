@@ -6,6 +6,7 @@ public class BossEntity extends Entity{
 	private double moveSpeed = 75;
 	private int health = 5;
 	private boolean temp = false;
+	private double lastFire = 0;
 	
 	public BossEntity(Game game,String ref,int x,int y) {
 		super(ref, x, y);
@@ -26,6 +27,8 @@ public class BossEntity extends Entity{
 		if ((dx > 0) && (x > 550)) {
 			game.updateLogic();
 		}
+		
+		shoot();
 		
 		// proceed with normal move
 		super.move(delta);
@@ -62,6 +65,17 @@ public class BossEntity extends Entity{
 		temp = false;
 		if(health <= 0) {
 			return true;
+		}
+		return false;
+	}
+	
+	public boolean shoot() {
+		if(System.currentTimeMillis() - lastFire > 1000) {
+			if(Math.random() * 10 > 4) {
+				game.bossShot();
+				lastFire = System.currentTimeMillis();
+				return true;
+			}
 		}
 		return false;
 	}
