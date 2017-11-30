@@ -164,6 +164,8 @@ public class Game extends Canvas {
 	public void notifyDeath() {
 		message = "Oh no! They got you, try again?";
 		waitingForKeyPress = true;
+		score = 0;
+		round = 0;
 	}
 
 	public void notifyWin() {
